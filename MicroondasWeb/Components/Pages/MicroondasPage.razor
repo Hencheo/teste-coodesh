@@ -1,0 +1,73 @@
+@page "/microondas"
+@using SimuladorMicroondas
+@rendermode InteractiveServer
+
+<PageTitle>BennerCoodesh</PageTitle>
+
+<h1>Micro-ondas Benner</h1>
+
+<div style="border: 5px solid #333; padding: 20px; width: 350px; background-color: #eee; border-radius: 10px;">
+    
+    <div style="background-color: black; color: lime; padding: 10px; text-align: right; font-family: monospace; font-size: 30px; margin-bottom: 20px;">
+        @FormatagemTempo()
+    </div>
+
+    
+    <div style="height: 60px; overflow-y: auto; background: white; margin-bottom: 10px; font-size: 10px; border: 1px solid #ccc; padding: 5px;">
+        @micro.tela
+    </div>
+
+    @if (!micro.estaLigado || micro.estaPausado)
+    {
+        <div>
+            <label>Tempo (seg):</label><br />
+            <input type="number" @bind="inputTempo" style="width: 100%" /><br /><br />
+
+            <label>Potência (1-10):</label><br />
+            <input type="number" @bind="inputPotencia" style="width: 100%" /><br /><br />
+        </div>
+    }
+
+    <div style="display: flex; gap: 10px;">
+        <button @onclick="BotaoIniciar" style="background-color: green; color: white; padding: 10px; flex: 1;">INICIAR / +30s</button>
+        <button @onclick="BotaoParar" style="background-color: red; color: white; padding: 10px; flex: 1;">PAUSAR / CANCELAR</button>
+    </div>
+</div>
+
+@code {
+    Microondas micro = new Microondas();
+    int inputTempo = 0;
+    int inputPotencia = 10;
+
+    
+    string FormatagemTempo()
+    {
+        int m = micro.tempo / 60;
+        int s = micro.tempo % 60;
+        return $"{m:D2}:{s:D2}";
+    }
+
+    async Task BotaoIniciar()
+    {
+        
+        if (!micro.estaLigado && !micro.estaPausado)
+        {
+            micro.Configurar(inputTempo > 0 ? inputTempo : 30, inputPotencia);
+        }
+
+        micro.Iniciar();
+
+        
+        while (micro.estaLigado && !micro.estaPausado)
+        {
+            await Task.Delay(1000); 
+            micro.Atualizar();
+            StateHasChanged(); 
+        }
+    }
+
+    void BotaoParar()
+    {
+        micro.Parar();
+    }
+}
