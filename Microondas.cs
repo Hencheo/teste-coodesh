@@ -2,89 +2,115 @@ using System;
 
 namespace SimuladorMicroondas
 {
-    // classe para microondas
     public class Microondas
     {
-        public int tempo; // tempo em segundos
-        public int potencia = 10;
-        public bool estaLigado; 
-        public bool estaPausado;
-        public string tela = "";
+        private int _tempo;
+        private int _potencia = 10;
+        private bool _estaLigado;
+        private bool _estaPausado;
+        private string _tela = "";
+        private string _mensagemErro = "";
 
-        // Lambda simples (Expression-bodied property)
-        public bool PodeIniciar => !estaLigado || estaPausado;
+        public int Tempo => _tempo;
+        public int Potencia => _potencia;
+        public bool EstaLigado => _estaLigado;
+        public bool EstaPausado => _estaPausado;
+        public string Tela => _tela;
+        public string MensagemErro => _mensagemErro;
 
-        public void Configurar(int segundos, int p)
+        public bool PodeIniciar => !_estaLigado || _estaPausado;
+
+        public bool Configurar(int segundos, int p)
         {
+            _mensagemErro = "";
+
             if (segundos < 1 || segundos > 120)
             {
-                Console.WriteLine("Erro: Tempo tem que ser entre 1 e 120!!");
-                return;
+                _mensagemErro = "Erro: O tempo deve estar entre 1 e 120 segundos!";
+                return false;
             }
             
             if (p < 1 || p > 10)
             {
-                Console.WriteLine("Erro: Potencia entre 1 e 10!");
-                return;
+                _mensagemErro = "Erro: A potência deve ser de 1 a 10!";
+                return false;
             }
 
-            tempo = segundos;
-            potencia = p;
-            tela = "";
-            estaPausado = false;
-            estaLigado = false;
+            _tempo = segundos;
+            _potencia = p;
+            _tela = "";
+            _estaPausado = false;
+            _estaLigado = false;
+            return true;
         }
 
         public void Iniciar()
         {
-            if (!estaLigado)
+            _mensagemErro = "";
+            if (!_estaLigado)
             {
-                if (tempo == 0)
+                if (_tempo == 0)
                 {
-                    tempo = 30;
-                    potencia = 10;
+                    _tempo = 30;
+                    _potencia = 10;
                 }
-                estaLigado = true;
-                estaPausado = false;
+                _estaLigado = true;
+                _estaPausado = false;
             }
             else
             {
-                tempo += 30;
-                if (tempo > 120) tempo = 120;
+                _tempo += 30;
+                if (_tempo > 120) 
+                {
+                    _tempo = 120;
+                }
             }
         }
 
         public void Parar()
         {
-            if (estaLigado && !estaPausado)
+            if (_estaLigado && !_estaPausado)
             {
-                estaPausado = true;
+                _estaPausado = true;
             }
             else
             {
-                estaLigado = false;
-                estaPausado = false;
-                tempo = 0;
-                tela = "";
+                _estaLigado = false;
+                _estaPausado = false;
+                _tempo = 0;
+                _tela = "";
+                _mensagemErro = "";
             }
         }
 
         public void Atualizar()
         {
-            if (estaLigado && !estaPausado && tempo > 0)
+            if (_estaLigado && !_estaPausado && _tempo > 0)
             {
-                for (int i = 0; i < potencia; i++)
+                for (int i = 0; i < _potencia; i++)
                 {
-                    tela += ".";
+                    _tela += ".";
                 }
                 
-                tempo--;
+                _tempo--;
 
-                if (tempo == 0)
+                if (_tempo == 0)
                 {
-                    estaLigado = false;
-                    tela += " Aquecimento concluído";
+                    _estaLigado = false;
+                    _tela += " Aquecimento concluído";
                 }
+            }
+        }
+
+        public void AdicionarDigito(int digito, ref int inputTempo)
+        {
+            string s = inputTempo.ToString();
+            if (s == "0") s = "";
+            s += digito.ToString();
+            
+            if (int.TryParse(s, out int result))
+            {
+                inputTempo = result;
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 
 namespace SimuladorMicroondas
@@ -13,7 +13,7 @@ namespace SimuladorMicroondas
             {
                 ExibirStatus();
                 
-                if (micro.estaLigado && !micro.estaPausado)
+                if (micro.EstaLigado && !micro.EstaPausado)
                 {
                     Console.WriteLine("Esquentando... (Aperte P para pausar)");
                     
@@ -41,18 +41,25 @@ namespace SimuladorMicroondas
                     Console.WriteLine("0 - Sair");
                     Console.Write("Escolha: ");
 
-                    string opcao = Console.ReadLine();
+                    string opcao = Console.ReadLine() ?? "";
 
                     if (opcao == "1")
                     {
                         Console.Write("Tempo: ");
-                        int t = int.Parse(Console.ReadLine());
-                        Console.Write("Potencia (1-10): ");
-                        string pStr = Console.ReadLine();
-                        int p = 10;
-                        if (pStr != "") p = int.Parse(pStr);
+                        if (int.TryParse(Console.ReadLine(), out int t))
+                        {
+                            Console.Write("Potencia (1-10): ");
+                            string pStr = Console.ReadLine() ?? "";
+                            int p = 10;
+                            if (pStr != "") int.TryParse(pStr, out p);
 
-                        micro.Configurar(t, p);
+                            if (!micro.Configurar(t, p))
+                            {
+                                Console.WriteLine(micro.MensagemErro);
+                                Console.WriteLine("Pressione qualquer tecla para continuar...");
+                                Console.ReadKey();
+                            }
+                        }
                     }
                     else if (opcao == "2")
                     {
@@ -75,12 +82,13 @@ namespace SimuladorMicroondas
             Console.Clear();
             Console.WriteLine("=== MICROONDAS BENNER ===");
             
-            int m = micro.tempo / 60;
-            int s = micro.tempo % 60;
+            int m = micro.Tempo / 60;
+            int s = micro.Tempo % 60;
             
             Console.WriteLine($"Tempo: {m:D2}:{s:D2}");
-            Console.WriteLine($"Potencia: {micro.potencia}");
-            Console.WriteLine($"Progresso: {micro.tela}");
+            Console.WriteLine($"Potencia: {micro.Potencia}");
+            Console.WriteLine($"Progresso: {micro.Tela}");
+            if (!string.IsNullOrEmpty(micro.MensagemErro)) Console.WriteLine($"ERRO: {micro.MensagemErro}");
             Console.WriteLine("======================");
         }
     }
