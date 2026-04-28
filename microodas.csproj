@@ -11,6 +11,9 @@
     <Compile Remove="MicroondasWeb\**" />
     <EmbeddedResource Remove="MicroondasWeb\**" />
     <None Remove="MicroondasWeb\**" />
+    <Compile Remove="microodas.Tests\**" />
+    <EmbeddedResource Remove="microodas.Tests\**" />
+    <None Remove="microodas.Tests\**" />
   </ItemGroup>
 
 </Project>

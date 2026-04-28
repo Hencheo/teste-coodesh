@@ -10,6 +10,8 @@ namespace SimuladorMicroondas
         private bool _estaPausado;
         private string _tela = "";
         private string _mensagemErro = "";
+        private char _caractereAtual = '.';
+        private bool _ehProgramaPreDefinido = false;
 
         public int Tempo => _tempo;
         public int Potencia => _potencia;
@@ -20,16 +22,22 @@ namespace SimuladorMicroondas
 
         public bool PodeIniciar => !_estaLigado || _estaPausado;
 
-        public bool Configurar(int segundos, int p)
+        public bool Configurar(int segundos, int p, char caractere = '.', bool ehPrograma = false)
         {
             _mensagemErro = "";
 
-            if (segundos < 1 || segundos > 120)
+            if (!ehPrograma && (segundos < 1 || segundos > 120))
             {
                 _mensagemErro = "Erro: O tempo deve estar entre 1 e 120 segundos!";
                 return false;
             }
             
+            if (segundos < 1 || segundos > 600)
+            {
+                _mensagemErro = "Erro: Tempo inválido!";
+                return false;
+            }
+
             if (p < 1 || p > 10)
             {
                 _mensagemErro = "Erro: A potência deve ser de 1 a 10!";
@@ -38,6 +46,8 @@ namespace SimuladorMicroondas
 
             _tempo = segundos;
             _potencia = p;
+            _caractereAtual = caractere;
+            _ehProgramaPreDefinido = ehPrograma;
             _tela = "";
             _estaPausado = false;
             _estaLigado = false;
@@ -53,16 +63,21 @@ namespace SimuladorMicroondas
                 {
                     _tempo = 30;
                     _potencia = 10;
+                    _caractereAtual = '.';
+                    _ehProgramaPreDefinido = false;
                 }
                 _estaLigado = true;
                 _estaPausado = false;
             }
             else
             {
-                _tempo += 30;
-                if (_tempo > 120) 
+                if (!_ehProgramaPreDefinido)
                 {
-                    _tempo = 120;
+                    _tempo += 30;
+                    if (_tempo > 120) 
+                    {
+                        _tempo = 120;
+                    }
                 }
             }
         }
@@ -80,6 +95,7 @@ namespace SimuladorMicroondas
                 _tempo = 0;
                 _tela = "";
                 _mensagemErro = "";
+                _ehProgramaPreDefinido = false;
             }
         }
 
@@ -89,7 +105,7 @@ namespace SimuladorMicroondas
             {
                 for (int i = 0; i < _potencia; i++)
                 {
-                    _tela += ".";
+                    _tela += _caractereAtual;
                 }
                 
                 _tempo--;

@@ -19,26 +19,25 @@
     }
 
     <div class="controles">
-        <!-- Painel de Inputs e Teclado -->
         <div class="painel-digital">
             @if (!micro.EstaLigado || micro.EstaPausado)
             {
                 <div class="inputs">
                     <label>Tempo (seg):</label>
-                    <input type="number" @bind="inputTempo" class="form-control" />
+                    <input type="number" @bind="inputTempo" class="form-control" disabled="@(programaSelecionado != null)"/>
                     
                     <label>Potência (1-10):</label>
-                    <input type="number" @bind="inputPotencia" class="form-control" />
+                    <input type="number" @bind="inputPotencia" class="form-control" disabled="@(programaSelecionado != null)"/>
                 </div>
 
                 <div class="teclado-numerico">
                     @for (int i = 1; i <= 9; i++)
                     {
                         int n = i;
-                        <button class="btn-teclado" @onclick="() => AdicionarNumero(n)">@n</button>
+                        <button class="btn-teclado" @onclick="() => AdicionarNumero(n)" disabled="@(programaSelecionado != null)">@n</button>
                     }
-                    <button class="btn-teclado" @onclick="() => AdicionarNumero(0)">0</button>
-                    <button class="btn-teclado btn-clear" @onclick="LimparInputs">C</button>
+                    <button class="btn-teclado" @onclick="() => AdicionarNumero(0)" disabled="@(programaSelecionado != null)">0</button>
+                    <button class="btn-teclado btn-clear" @onclick="LimparInputs" disabled="@(programaSelecionado != null)">C</button>
                 </div>
             }
         </div>
@@ -48,10 +47,39 @@
             <button @onclick="BotaoIniciar" class="btn-acao btn-iniciar">INICIAR / +30s</button>
             <button @onclick="BotaoParar" class="btn-acao btn-parar">PAUSAR / CANCELAR</button>
         </div>
+
+        <div class="lista-programas">
+            <h3>Pré-Definidos</h3>
+            @foreach(var p in programas)
+            {
+                <button class="btn-programa" @onclick="@(()=> SelecionarPrograma(p))">@p.Nome</button>
+            }            
+
+        </div>
     </div>
 </div>
 
 <style>
+
+    .lista-prgramas {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .btn-programa {
+        padding: 10px;
+        background-color: #eee;
+        border: 1px solid #999;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .btn-programa:hover {
+        background-color: #ddd;
+    }
+
     .microondas-container {
         border: 5px solid #444;
         padding: 20px;
@@ -140,6 +168,10 @@
 </style>
 
 @code {
+    
+    List<ProgramaPreDefinido> programas = ProgramaPreDefinido.ObterProgramas();
+    ProgramaPreDefinido? programaSelecionado = null;
+
     Microondas micro = new Microondas();
     int inputTempo = 0;
     int inputPotencia = 10;
@@ -166,18 +198,25 @@
     {
         if (!micro.EstaLigado && !micro.EstaPausado)
         {
-            // Se não informou nada, início rápido
-            int tempoFinal = inputTempo == 0 ? 30 : inputTempo;
-            
-            if (!micro.Configurar(tempoFinal, inputPotencia))
+            bool resultado;
+            if (programaSelecionado != null)
             {
-                return; // Erro de validação
+                resultado = micro.Configurar(programaSelecionado.Tempo, 
+                                        programaSelecionado.Potencia, 
+                                        programaSelecionado.Caractere, 
+                                        true);
             }
+            else
+            {
+                int tempoFinal = inputTempo == 0 ? 30 : inputTempo;
+                resultado = micro.Configurar(tempoFinal, inputPotencia);
+            }
+
+            if (!resultado) return;
         }
 
         micro.Iniciar();
 
-        // Loop de atualização
         while (micro.EstaLigado && !micro.EstaPausado)
         {
             await Task.Delay(1000); 
@@ -193,6 +232,21 @@
         {
             inputTempo = 0;
             inputPotencia = 10;
+        }
+    }
+    void SelecionarPrograma(ProgramaPreDefinido prato)
+    {
+        if (programaSelecionado == prato)
+        {
+            programaSelecionado = null;
+            inputTempo = 0;
+            inputPotencia = 10;
+        }
+        else
+        {
+            programaSelecionado = prato;
+            inputTempo = prato.Tempo;
+            inputPotencia = prato.Potencia;
         }
     }
 }
