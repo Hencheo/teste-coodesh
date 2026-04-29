@@ -3,20 +3,34 @@
 @rendermode InteractiveServer
 
 <PageTitle>Micro-ondas Benner</PageTitle>
-
-<div class="microondas-container">
-    <h1>Micro-ondas Benner</h1>
-
-    <!-- Visor -->
-    <div class="visor">
-        <div class="tempo-display">@FormatagemTempo()</div>
-        <div class="status-tela">@micro.Tela</div>
-    </div>
-
-    @if (!string.IsNullOrEmpty(micro.MensagemErro))
+@if (!string.IsNullOrEmpty(micro.MensagemErro))
     {
         <div class="alert alert-danger">@micro.MensagemErro</div>
-    }
+    }           
+<div class="microondas-container">
+
+    <div class="visor-e-predefinidos">
+        <div class="visor">
+            <div class="tempo-display">@FormatagemTempo()</div>
+            <div class="status-tela">@micro.Tela</div>
+        </div>
+        <div class="lista-programas">
+                @foreach(var p in programas)
+                {
+                    <button class="btn-programa" @onclick="@(()=> SelecionarPrograma(p))">@p.Nome</button>
+                }            
+
+        </div>
+        <div class="customizados">
+            <h4>Meus Programas</h4>
+            <div class="lista-programas" style="margin-top: 5px;">
+                @foreach(var c in _programasCustomizados)
+                {
+                    <button class="btn-programa btn-customizado" @onclick="@(()=> SelecionarProgramaCustomizado(c))">@c.Nome</button>
+                }
+            </div>
+        </div>
+    </div>
 
     <div class="controles">
         <div class="painel-digital">
@@ -42,26 +56,39 @@
             }
         </div>
 
-        <!-- Botões de Ação -->
         <div class="acoes">
             <button @onclick="BotaoIniciar" class="btn-acao btn-iniciar">INICIAR / +30s</button>
             <button @onclick="BotaoParar" class="btn-acao btn-parar">PAUSAR / CANCELAR</button>
         </div>
-
-        <div class="lista-programas">
-            <h3>Pré-Definidos</h3>
-            @foreach(var p in programas)
-            {
-                <button class="btn-programa" @onclick="@(()=> SelecionarPrograma(p))">@p.Nome</button>
-            }            
-
-        </div>
     </div>
+</div>
+<div class="cadastro-container">
+    <h2>Adicionar Novo Programa</h2>
+    <label>Nome: </label>
+    <input type="text" @bind="novoNome" class="form-control" />
+    <label>Alimento: </label>
+    <input type="text" @bind="novoAlimento" class="form-control" />
+    <label>Tempo (seg): </label>
+    <input type="number" @bind="novoTempo" class="form-control" />
+    <label>Potência (1-10): </label>
+    <input type="number" @bind="novoPotencia" class="form-control" />
+    <label>Caractere: </label>
+    <input type="text" maxlength="1" @bind="novoCaractere" class="form-control" />
+    <label>Instruções (Opcional): </label>
+    <input type="text" @bind="novaInstrucao" class="form-control" />
+    <button class="btn-acao-cadastro" @onclick="AdicionarPrograma">Adicionar Programa</button>
 </div>
 
 <style>
 
-    .lista-prgramas {
+    .corpo-microondas {
+        display: flex;
+        flex-direction:row;
+        gap: 20px;
+        justify-content: space-between;
+    }
+
+    .lista-programas {
         margin-top: 20px;
         display: flex;
         flex-wrap: wrap;
@@ -80,23 +107,49 @@
         background-color: #ddd;
     }
 
+    .btn-customizado {
+        font-style: italic;
+    }
+
     .microondas-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
         border: 5px solid #444;
         padding: 20px;
-        width: 400px;
-        background-color: #d1d1d1;
+        width: 800px;
+        background: linear-gradient(135deg, #e6e6e6 0%, #a6a6a6 100%);
+        box-shadow: 10px 10px 20px rgba(0,0,0,0.4), inset -2px -2px 5px rgba(0,0,0,0.2);
         border-radius: 15px;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: auto;
     }
 
+    .visor-e-predefinidos {
+        flex: 3;
+        width: 800px;
+    }
+
     .visor {
         background-color: #222;
         color: #0f0;
+        min-height: 150px;
         padding: 15px;
         border-radius: 5px;
         margin-bottom: 15px;
         text-align: right;
+        border: 5px solid #111;
+        box-shadow: inset 0px 0px 20px rgba(255,255,255,0.1);
+    }
+
+    .controles {
+        flex: 1;
+        border: 2px solid #888;
+        border-radius: 10px;
+        padding: 15px;
+        background-color: #333;
+        color: white;
     }
 
     .tempo-display {
@@ -165,12 +218,64 @@
         margin-bottom: 10px;
         padding: 5px;
     }
+
+
+    .cadastro-container{
+        margin-top: 30px;
+    }
+
+    .btn-acao-cadastro {
+        color: white;
+        background-color: green;
+        margin-bottom:20px;
+    }
 </style>
 
 @code {
+    string novoNome = "";
+    string novoAlimento = "";
+    int novoTempo = 0;
+    int novoPotencia = 10;
+    string novoCaractere = "";
+    string novaInstrucao = "";
+    string mensagemCadastro = "";
+
+    void AdicionarPrograma()
+    {
+        if (string.IsNullOrEmpty(novoCaractere))
+        {
+            mensagemCadastro = "Erro. Caractere inválido.";
+            return;
+        }
+        char caractere = novoCaractere[0];
+
+        var NovoPrograma = new CadastroPrograma(novoNome, novoAlimento,novoTempo, novoPotencia, caractere, novaInstrucao);
+
+        gerenciador.AdicionarPrograma(NovoPrograma);
+
+        _programasCustomizados = gerenciador.ObterProgramasCustomizados();
+
+        mensagemCadastro = "Programa salvo!";
+
+        novoNome = "";
+        novoAlimento = "";
+        novoTempo = 0;
+        novoPotencia = 10;
+        novoCaractere = "";
+        novaInstrucao = "";
+    }
     
     List<ProgramaPreDefinido> programas = ProgramaPreDefinido.ObterProgramas();
     ProgramaPreDefinido? programaSelecionado = null;
+
+    GerenciadorPrograma gerenciador = new GerenciadorPrograma();
+    List<CadastroPrograma> _programasCustomizados = new List<CadastroPrograma>();
+    CadastroPrograma? programaCustomizadoSelecionado = null;
+
+    protected override void OnInitialized()
+    {
+        _programasCustomizados = gerenciador.ObterProgramasCustomizados();
+    }
 
     Microondas micro = new Microondas();
     int inputTempo = 0;
@@ -206,6 +311,13 @@
                                         programaSelecionado.Caractere, 
                                         true);
             }
+            else if (programaCustomizadoSelecionado != null)
+            {
+                resultado = micro.Configurar(programaCustomizadoSelecionado.Tempo, 
+                                        programaCustomizadoSelecionado.Potencia, 
+                                        programaCustomizadoSelecionado.Caractere, 
+                                        true);
+            }
             else
             {
                 int tempoFinal = inputTempo == 0 ? 30 : inputTempo;
@@ -236,6 +348,8 @@
     }
     void SelecionarPrograma(ProgramaPreDefinido prato)
     {
+        programaCustomizadoSelecionado = null; 
+
         if (programaSelecionado == prato)
         {
             programaSelecionado = null;
@@ -245,6 +359,24 @@
         else
         {
             programaSelecionado = prato;
+            inputTempo = prato.Tempo;
+            inputPotencia = prato.Potencia;
+        }
+    }
+
+    void SelecionarProgramaCustomizado(CadastroPrograma prato)
+    {
+        programaSelecionado = null; 
+
+        if (programaCustomizadoSelecionado == prato)
+        {
+            programaCustomizadoSelecionado = null;
+            inputTempo = 0;
+            inputPotencia = 10;
+        }
+        else
+        {
+            programaCustomizadoSelecionado = prato;
             inputTempo = prato.Tempo;
             inputPotencia = prato.Potencia;
         }

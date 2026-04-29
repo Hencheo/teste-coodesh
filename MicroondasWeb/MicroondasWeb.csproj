@@ -9,6 +9,8 @@
   <ItemGroup>
     <Compile Include="..\Microondas.cs" Link="Microondas.cs" />
     <Compile Include="..\ProgramaAquecimento.cs" Link="ProgramaAquecimento.cs" />
+    <Compile Include="..\CadastroPrograma.cs" Link="CadastroPrograma.cs" />
+    <Compile Include="..\GerenciadorProgramas.cs" Link="GerenciadorProgramas.cs" />
   </ItemGroup>
 
 </Project>

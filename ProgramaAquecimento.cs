@@ -33,7 +33,7 @@ namespace SimuladorMicroondas
 
             lista.Add(new ProgramaPreDefinido("Leite", 5 * 60, 5, 'o', "Cuidado com o aquecimento de líquidos! O choque térmico, aliado ao movimento do recipiente pode causar fervura imediata, causando risco de queimadura"));
 
-            lista.Add(new ProgramaPreDefinido("Carne (pedaços/fatias)", 14, 4 * 60, 'X',"Interrompa o processo de aquecimento na metade. Vire o conteúdo com a parte debaixo agora voltada para cima, para um descongelamento uniforme."));
+            lista.Add(new ProgramaPreDefinido("Carne (pedaços/fatias)", 14 * 60, 4, 'X',"Interrompa o processo de aquecimento na metade. Vire o conteúdo com a parte debaixo agora voltada para cima, para um descongelamento uniforme."));
 
             lista.Add(new ProgramaPreDefinido("Frango (Qualquer corte)", 8 * 60, 7, '#', "Interrompa o processo de aquecimento na metade. Vire o conteúdo com a parte debaixo agora voltada para cima, para um descongelamento uniforme."));
 

@@ -1,0 +1,18 @@
+[
+    {
+        "Nome": "Porco",
+        "Alimento": "Costela Su\u00EDna",
+        "Tempo": 180,
+        "Potencia": 4,
+        "Caractere": "m",
+        "Instrucoes": null
+    },
+    {
+        "Nome": "Peixe",
+        "Alimento": "Peixe",
+        "Tempo": 300,
+        "Potencia": 5,
+        "Caractere": "p",
+        "Instrucoes": null
+    }
+]
