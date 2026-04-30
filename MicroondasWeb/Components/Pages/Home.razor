@@ -1,7 +1,37 @@
-﻿@page "/"
+@page "/"
 
 <PageTitle>Home</PageTitle>
 
-<h1>Projeto Benner</h1>
+<div class="home-container">
+    <h1>Bem-vindo</h1>
+    <p>Para acessar a aplicação, por favor realize o login.</p>
+    
+    <a href="login" class="btn-login-home">Acessar Sistema</a>
+</div>
 
-<p>Simulador de Micro-ondas</p>
+<style>
+    .home-container {
+        text-align: center;
+        padding: 50px;
+        background: #f4f4f4;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-top: 50px;
+    }
+
+    .btn-login-home {
+        display: inline-block;
+        padding: 10px 25px;
+        background-color: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    .btn-login-home:hover {
+        background-color: #218838;
+        color: white;
+    }
+</style>

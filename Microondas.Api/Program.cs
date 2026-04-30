@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-
+using Microondas.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 var chaveSecreta = Encoding.UTF8.GetBytes("chaveSecretaMicroondas2026@SuperSeguraComMaisDe32Caracteres1234567890");
@@ -9,7 +9,6 @@ var chaveSecreta = Encoding.UTF8.GetBytes("chaveSecretaMicroondas2026@SuperSegur
 builder.Services.AddAuthentication(opcoes => 
 {
     opcoes.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-
     opcoes.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(opcoes =>
@@ -23,19 +22,31 @@ builder.Services.AddAuthentication(opcoes =>
         IssuerSigningKey = new SymmetricSecurityKey(chaveSecreta)
     };
 });
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirTudo",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<TratamentoErrosMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+app.UseCors("PermitirTudo");
+// app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
