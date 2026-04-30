@@ -7,7 +7,7 @@ Este projeto foi criado para simular um micro-ondas digital usando C#. A ideia f
 ### Fase 1: O Básico
 *   Dá pra configurar tempo (1 a 120s) e potência (1 a 10).
 *   Botão de Início Rápido (joga 30s na potência máxima se vc tiver com pressa).
-*   Se vc apertar iniciar com o bicho já rodando, ele soma mais 30s.
+*   Se vc apertar iniciar com o o tempo já rolando, ele soma mais 30s.
 
 ### Fase 2: Programas e Regras
 *   O sistema já vem com 5 programas prontos (Pipoca, Leite, etc).
