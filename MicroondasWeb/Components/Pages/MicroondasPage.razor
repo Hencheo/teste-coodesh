@@ -1,5 +1,8 @@
 @page "/microondas"
 @using SimuladorMicroondas
+@inject AuthService Auth
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <PageTitle>Micro-ondas Benner</PageTitle>
@@ -275,6 +278,18 @@
     protected override void OnInitialized()
     {
         _programasCustomizados = gerenciador.ObterProgramasCustomizados();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Auth.CarregarSessao(JS);
+            if (!Auth.IsAuthenticated)
+            {
+                Navigation.NavigateTo("/login");
+            }
+        }
     }
 
     Microondas micro = new Microondas();

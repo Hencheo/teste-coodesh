@@ -3,6 +3,8 @@
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject NavigationManager Navigation
+@inject AuthService Auth
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <PageTitle>Login - Micro-ondas</PageTitle>
@@ -158,11 +160,11 @@
             {
                 var result = await response.Content.ReadFromJsonAsync<JsonElement>();
                 token = result.GetProperty("token").GetString() ?? "";
+                await Auth.Login(token, JS);
                 mensagemStatus = "ACESSO CONCEDIDO!";
                 exibirToken = true;
                 
-                // Em um app real, salvaríamos o token no LocalStorage aqui
-                // Para este exemplo simples, apenas mostramos o sucesso
+                // Redireciona se for sucesso
                 await Task.Delay(2000);
                 Navigation.NavigateTo("/microondas");
             }

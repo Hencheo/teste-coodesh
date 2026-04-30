@@ -36,7 +36,7 @@ namespace Microondas.Api.Middleware
                 mensagemErro = erro.Message;
             }
 
-            // Logar o erro em um arquivo conforme a spec
+            // Registrar logs no arquivo
             LogarErroNoArquivo(erro);
 
             var resposta = new { mensagem = mensagemErro };

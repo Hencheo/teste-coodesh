@@ -16,11 +16,13 @@ namespace Microondas.Api.Controllers
             public string Senha { get; set; } = string.Empty;
         }
 
-        
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequisicao requisicao)
         {
-            if (requisicao.Usuario == "admin" && requisicao.Senha == "admin")
+            // O hash de "admin" gerado pelo nosso Criptografia.GerarHash
+            string hashAdmin = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+
+            if (requisicao.Usuario == "admin" && MicroondasWeb.Criptografia.GerarHash(requisicao.Senha) == hashAdmin)
             {
                 var claim = new[]
                 {

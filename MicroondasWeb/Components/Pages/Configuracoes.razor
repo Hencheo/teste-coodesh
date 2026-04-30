@@ -1,0 +1,173 @@
+@page "/configuracoes"
+@using System.Text.Json
+@inject NavigationManager Navigation
+@inject AuthService Auth
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+<PageTitle>Configurações - Micro-ondas</PageTitle>
+
+<div class="config-outer-container">
+    <div class="config-container">
+        <div class="visor-config">
+            <div class="status-tela">PAINEL DE CONFIGURAÇÃO</div>
+        </div>
+
+        <div class="painel-config">
+            <div class="form-grupo">
+                <label>URL da API:</label>
+                <input type="text" @bind="apiUrl" class="form-control" placeholder="http://localhost:5018/" />
+            </div>
+
+            <div class="form-grupo">
+                <label>Usuário Padrão:</label>
+                <input type="text" @bind="usuario" class="form-control" />
+            </div>
+
+            <div class="form-grupo">
+                <label>Senha de Acesso:</label>
+                <input type="password" @bind="senha" class="form-control" />
+            </div>
+
+            <div class="acoes-config">
+                <button @onclick="SalvarConfiguracoes" class="btn-acao btn-iniciar">SALVAR</button>
+                <button @onclick="Voltar" class="btn-acao btn-parar">VOLTAR</button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(mensagem))
+            {
+                <div class="feedback-msg">@mensagem</div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .config-outer-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+    }
+
+    .config-container {
+        display: flex;
+        flex-direction: column;
+        width: 450px;
+        background: linear-gradient(135deg, #e6e6e6 0%, #a6a6a6 100%);
+        border: 5px solid #444;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 10px 10px 20px rgba(0,0,0,0.4);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .visor-config {
+        background-color: #222;
+        color: #0f0;
+        min-height: 50px;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 4px solid #111;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .status-tela {
+        font-size: 14px;
+        font-family: monospace;
+        color: #0f0;
+        text-transform: uppercase;
+    }
+
+    .painel-config {
+        background-color: #333;
+        padding: 20px;
+        border-radius: 10px;
+        border: 2px solid #888;
+        color: white;
+    }
+
+    .form-grupo {
+        margin-bottom: 15px;
+    }
+
+    .form-grupo label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 13px;
+        color: #ccc;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #666;
+        background: #eee;
+        color: #000;
+    }
+
+    .acoes-config {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-acao {
+        padding: 10px;
+        font-weight: bold;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .btn-iniciar { background-color: #28a745; }
+    .btn-parar { background-color: #666; }
+
+    .feedback-msg {
+        margin-top: 15px;
+        text-align: center;
+        color: #0f0;
+        font-size: 12px;
+        font-family: monospace;
+    }
+</style>
+
+@code {
+    private string apiUrl = "http://localhost:5018/";
+    private string usuario = "";
+    private string senha = "";
+    private string mensagem = "";
+
+    protected override void OnInitialized()
+    {
+        // TODO: Carregar configs salvas
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Auth.CarregarSessao(JS);
+            if (!Auth.IsAuthenticated)
+            {
+                Navigation.NavigateTo("/login");
+            }
+        }
+    }
+
+    private void SalvarConfiguracoes()
+    {
+        mensagem = "CONFIGURAÇÕES SALVAS COM SUCESSO!";
+    }
+
+    private void Voltar()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

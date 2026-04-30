@@ -1,33 +1,43 @@
 # Simulador de Micro-ondas
 
-Este é um projeto desenvolvido em C# para simular o funcionamento de um micro-ondas digital.
+Este projeto foi criado para simular um micro-ondas digital usando C#. A ideia foi separar bem a lógica do aparelho (backend) da interface que o usuário vê (frontend), seguindo o que foi pedido no desafio.
 
-## O que o projeto faz (até a Fase 3)
+## O que já foi feito até agora
 
-### Fase 1: Funcionamento Básico
-* Controle de tempo de aquecimento (de 1 a 120 segundos).
-* Controle de potência (de 1 a 10).
-* Botão de Início Rápido (adiciona 30 segundos com potência 10).
+### Fase 1: O Básico
+*   Dá pra configurar tempo (1 a 120s) e potência (1 a 10).
+*   Botão de Início Rápido (joga 30s na potência máxima se vc tiver com pressa).
+*   Se vc apertar iniciar com o bicho já rodando, ele soma mais 30s.
 
-### Fase 2: Regras e Customização
-* Bloqueios de segurança para o tempo e potência não passarem do limite.
-* Opção de cadastrar novos programas de aquecimento salvando os dados.
+### Fase 2: Programas e Regras
+*   O sistema já vem com 5 programas prontos (Pipoca, Leite, etc).
+*   Dá pra cadastrar seus próprios programas.
+*   Tem validações pra não deixar colocar caractere repetido ou usar o ponto (.) que é o padrão.
 
-### Fase 3: Interface Web
-* Tela feita em Blazor para operar o aparelho de um jeito mais amigável e visual.
+### Fase 3: Interface Web (Blazor)
+*   Fiz uma tela em Blazor que tenta imitar um painel de micro-ondas de verdade.
+*   Dá pra clicar nos números e controlar tudo pelo mouse ou teclado.
 
-## Como rodar o projeto
+### Fase 4: Integração com API e Segurança
+*   Toda a parte de login e autenticação já tá batendo na API.
+*   Criei um middleware que pega qualquer erro que der no servidor e salva num log (`erros_microondas.log`), pra não deixar o usuário na mão.
+*   Tem uma tela de **Configurações** onde dá pra ajustar o endereço da API e os dados de acesso de um jeito fácil.
 
-### Rodando o Servidor/API
-1. Entre na pasta `Microondas.Api`.
-2. Rode o comando:
-   ```bash
-   dotnet run
-   ```
+## Detalhes Importantes (Spec)
 
-### Rodando os Testes
-1. Para rodar os testes unitários do sistema, vá na pasta `microodas.Tests`.
-2. Rode o comando:
-   ```bash
-   dotnet test
-   ```
+*   **Persistência**: Optei por salvar os programas customizados num arquivo `programas.json`. Achei que ficava mais leve e simples pro nível do projeto, mas a lógica tá toda preparada se precisar virar um banco de dados depois.
+*   **Segurança**: O campo de senha tá mascarado na interface. A API usa Bearer Token pra garantir que só quem tá logado consiga mexer nos controles.
+*   **Conexão**: Se precisar mudar a porta ou o IP da API, é só ir na tela de Configurações do site e salvar o novo endereço por lá mesmo.
+
+## Como rodar o sistema
+
+1. **Subir a API**:
+   Entre na pasta `Microondas.Api` e mande um `dotnet run`. Ela vai subir por padrão no `http://localhost:5018`.
+
+2. **Rodar o Site**:
+   Na pasta `MicroondasWeb`, rode o `dotnet watch` ou `dotnet run`. O site vai abrir no `http://localhost:5000`.
+
+3. **Testes**:
+   Pra conferir se a lógica tá batendo, vá em `microodas.Tests` e rode `dotnet test`.
+
+Qualquer dúvida na rota ou porta, dá uma olhada na tela de Configurações no painel lateral do site!
